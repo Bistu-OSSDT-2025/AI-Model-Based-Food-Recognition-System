@@ -1,0 +1,166 @@
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Model-Based Food Recognition System</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      background-color: #f8f9fa;
+    }
+    .navbar {
+      background-color: #ffffff !important;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .navbar-brand i {
+      color: #0d6efd;
+    }
+    .card {
+      border: none;
+      border-radius: 0.75rem;
+      transition: all 0.3s ease;
+    }
+    .card:hover {
+      box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+      transform: translateY(-4px);
+    }
+    .btn {
+      border-radius: 2rem;
+    }
+    .upload-area button:hover {
+      transform: scale(1.02);
+    }
+    .img-fluid.rounded {
+      transition: transform 0.3s ease;
+    }
+    .img-fluid.rounded:hover {
+      transform: scale(1.03);
+    }
+    .modal-content {
+      border-radius: 1rem;
+    }
+    .page {
+      display: none;
+    }
+    .page.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#">
+        <i class="fas fa-utensils me-2"></i> AI Model-Based Food Recognition System
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="#" data-page="home">
+              <i class="fas fa-home me-1"></i> 首页
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-page="history">
+              <i class="fas fa-clock me-1"></i> 历史记录
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-page="overview">
+              <i class="fas fa-chart-pie me-1"></i> 数据概览
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#settingsModal">
+              <i class="fas fa-cog me-1"></i> 设置
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    <div id="home-page" class="page active">
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="card shadow-sm p-4">
+            <h5 class="mb-3">
+              <i class="fas fa-camera me-2"></i> 上传食物图片
+            </h5>
+            <div class="upload-area">
+              <input type="file" id="file-input" accept="image/*" class="d-none" />
+              <div class="d-grid gap-3">
+                <button class="btn btn-outline-primary btn-lg" id="upload-btn">
+                  <i class="fas fa-upload"></i> 选择图片
+                </button>
+                <button class="btn btn-outline-success btn-lg" id="camera-btn">
+                  <i class="fas fa-camera"></i> 拍照
+                </button>
+              </div>
+            </div>
+            <div id="preview-area" class="mt-3 d-none text-center">
+              <img id="preview-image" class="img-fluid rounded shadow-sm" alt="预览图片" />
+              <button class="btn btn-primary btn-lg mt-3 w-100" id="analyze-btn">
+                <i class="fas fa-search"></i> 分析图片
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div id="result-area" class="d-none">
+            <div class="card shadow-sm p-4">
+              <h5 class="mb-3">
+                <i class="fas fa-list-alt me-2"></i> 分析结果
+              </h5>
+              <div id="analysis-result" class="markdown-body"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="fas fa-cog me-2"></i> API 密钥设置
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="apiKeyForm">
+            <label class="form-label">百炼 API Key</label>
+            <div class="input-group">
+              <input type="password" class="form-control" id="apiKey" placeholder="请输入您的API Key" />
+              <button type="button" class="btn btn-outline-secondary" id="toggleApiKey">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+            <small class="form-text text-muted">
+              您的 API Key 将保存在浏览器本地。
+            </small>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+          <button class="btn btn-primary" id="saveApiKey">
+            <i class="fas fa-save me-1"></i> 保存设置
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
