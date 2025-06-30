@@ -1,0 +1,14 @@
+{
+  "name": "food-analysis-app",
+  "version": "0.0.1",
+  "description": "AI Model-Based Food Recognition System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "node-fetch": "^2.6.9"
+  }
+}
